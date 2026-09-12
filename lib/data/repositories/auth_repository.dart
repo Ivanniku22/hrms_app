@@ -7,45 +7,57 @@ class AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-
-  // Login Code
   Future<UserModel> login(String email, String password) async {
     try {
-      // 1. Sign in with Firebase Authentication
+      // STEP 1: Firebase Authentication
       final credential = await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
 
+      print('STEP 1: Firebase Auth successful');
+
+      // STEP 2: Get Firebase user
       final firebaseUser = credential.user;
 
       if (firebaseUser == null) {
         throw Exception('Login failed. Please try again.');
       }
 
-      // 2. Get the user's Firestore profile
+      print('STEP 2: UID = ${firebaseUser.uid}');
+
+      // STEP 3: Get Firestore profile
       final userDoc = await _firestore
           .collection('users')
           .doc(firebaseUser.uid)
           .get();
 
-      // 3. Profile must exist
+      print('STEP 3: Firestore document fetched');
+      print('STEP 4: Document exists = ${userDoc.exists}');
+      print('STEP 5: Document data = ${userDoc.data()}');
+
+      // STEP 4: Profile must exist
       if (!userDoc.exists || userDoc.data() == null) {
         await _auth.signOut();
         throw Exception('User profile not found.');
       }
 
-      // 4. Convert Firestore data to UserModel
+      // STEP 5: Convert Firestore data to UserModel
       final user = UserModel.fromFirestore(
         firebaseUser.uid,
         userDoc.data()!,
       );
 
-      // 5. Role must exist
+      print('STEP 6: UserModel created');
+      print('STEP 7: Role = ${user.role}');
+
+      // STEP 6: Role must exist
       if (user.role.isEmpty) {
         await _auth.signOut();
         throw Exception('User role is not configured.');
       }
+
+      print('STEP 8: Login repository completed successfully');
 
       return user;
     } on FirebaseAuthException catch (e) {
@@ -81,11 +93,15 @@ class AuthRepository {
       throw Exception(
         e.message ?? 'Something went wrong. Please try again.',
       );
+    } catch (e) {
+      print('UNEXPECTED ERROR: $e');
+
+      throw Exception(
+        'Unexpected error: $e',
+      );
     }
   }
 
-
-  // Logout Code
   Future<void> logout() async {
     await _auth.signOut();
   }

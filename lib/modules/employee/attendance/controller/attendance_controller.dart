@@ -14,7 +14,7 @@ class AttendanceController extends GetxController {
   final AuthController _authController;
 
   final cameraController = Rxn<CameraController>();
-  XFile? capturedSelfie;
+  final capturedSelfie = Rxn<XFile>();
 
   AttendanceController({
     required AttendanceRepository attendanceRepository,
@@ -109,7 +109,7 @@ class AttendanceController extends GetxController {
     }
 
     try {
-      capturedSelfie = await controller.takePicture();
+      capturedSelfie.value = await controller.takePicture();
 
       Get.snackbar(
         'Selfie Captured',

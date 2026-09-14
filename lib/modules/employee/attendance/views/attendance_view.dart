@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../app/routes/app_routes.dart';
 import '../controller/attendance_controller.dart';
 
 class AttendanceView extends GetView<AttendanceController> {
@@ -15,9 +16,11 @@ class AttendanceView extends GetView<AttendanceController> {
       body: Center(
         child: Obx(
               () => ElevatedButton.icon(
-            onPressed: controller.isLoading.value
-                ? null
-                : controller.checkLocation,
+                onPressed: controller.isLoading.value
+                    ? null
+                    : () {
+                  Get.toNamed(AppRoutes.selfie);
+                },
             icon: const Icon(Icons.location_on),
             label: controller.isLoading.value
                 ? const SizedBox(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../app/routes/app_routes.dart';
 import '../../../auth/controller/auth_controller.dart';
 
 class EmployeeDashboardView extends StatelessWidget {
@@ -21,13 +22,13 @@ class EmployeeDashboardView extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(
-        child: Text(
-          'Welcome, Employee!',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+      body: Center(
+        child: ElevatedButton.icon(
+            onPressed: () {
+              Get.toNamed(AppRoutes.attendance);
+            },
+          icon: const Icon(Icons.fingerprint),
+          label: const Text('Attendance'),
         ),
       ),
     );

@@ -4,6 +4,8 @@ import '../../modules/approver/dashboard/views/approver_dashboard_view.dart';
 import '../../modules/auth/bindings/auth_binding.dart';
 import '../../modules/auth/views/auth_gate_view.dart';
 import '../../modules/auth/views/login_view.dart';
+import '../../modules/employee/attendance/bindings/attendance_binding.dart';
+import '../../modules/employee/attendance/views/attendance_view.dart';
 import '../../modules/employee/dashboard/views/employee_dashboard_view.dart';
 import 'app_routes.dart';
 
@@ -25,6 +27,12 @@ class AppPages {
     GetPage(
       name: AppRoutes.employee,
       page: () => const EmployeeDashboardView(),
+    ),
+
+    GetPage(
+      name: AppRoutes.attendance,
+      page: () => const AttendanceView(),
+      binding: AttendanceBinding(),
     ),
 
     GetPage(

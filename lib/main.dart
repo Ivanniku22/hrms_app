@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'app/bindings/initial_bindings.dart';
 import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
 import 'firebase_options.dart';
@@ -24,7 +25,8 @@ class HRMSApp extends StatelessWidget {
       title: 'HRMS',
       debugShowCheckedModeBanner: false,
       getPages: AppPages.pages,
-      initialRoute: AppRoutes.login,
+      initialRoute: '/',
+      initialBinding: InitialBinding(),
     );
   }
 }

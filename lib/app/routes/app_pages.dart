@@ -2,12 +2,20 @@ import 'package:get/get.dart';
 
 import '../../modules/approver/dashboard/views/approver_dashboard_view.dart';
 import '../../modules/auth/bindings/auth_binding.dart';
+import '../../modules/auth/views/auth_gate_view.dart';
 import '../../modules/auth/views/login_view.dart';
 import '../../modules/employee/dashboard/views/employee_dashboard_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
   static final pages = <GetPage>[
+
+    GetPage(
+      name: '/',
+      page: () => const AuthGateView(),
+    ),
+
+
     GetPage(
       name: AppRoutes.login,
       page: () => const LoginView(),

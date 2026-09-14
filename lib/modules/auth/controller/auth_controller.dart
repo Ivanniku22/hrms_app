@@ -57,6 +57,37 @@ class AuthController extends GetxController {
     }
   }
 
+  Future<void> checkAuthState() async {
+    try {
+      final user = await _authRepository.getCurrentUser();
+
+      if (user == null) {
+        Get.offAllNamed('/login');
+        return;
+      }
+
+      currentUser = user;
+
+      if (user.role == 'employee') {
+        Get.offAllNamed('/employee');
+      } else if (user.role == 'approver') {
+        Get.offAllNamed('/approver');
+      } else {
+        await _authRepository.logout();
+
+        Get.snackbar(
+          'Access Denied',
+          'Invalid user role.',
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Session Error',
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
+  }
+
   void togglePasswordVisibility() {
     obscurePassword.value = !obscurePassword.value;
   }

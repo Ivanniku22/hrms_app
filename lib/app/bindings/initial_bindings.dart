@@ -1,0 +1,36 @@
+import 'package:get/get.dart';
+
+import '../../core/services/database_service.dart';
+import '../../core/services/firebase_service.dart';
+import '../../data/repositories/auth_repository.dart';
+import '../../modules/auth/controller/auth_controller.dart';
+
+class InitialBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put<FirebaseService>(
+      FirebaseService(),
+      permanent: true,
+    );
+
+    Get.put<DatabaseService>(
+      DatabaseService(),
+      permanent: true,
+    );
+
+    Get.put<AuthRepository>(
+      AuthRepository(
+        firebaseService: Get.find<FirebaseService>(),
+      ),
+      permanent: true,
+    );
+
+    Get.put<AuthController>(
+      AuthController(
+        authRepository: Get.find<AuthRepository>(),
+      ),
+      permanent: true,
+    );
+
+  }
+}

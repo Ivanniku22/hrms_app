@@ -31,6 +31,9 @@ class AttendanceController extends GetxController {
   final isLoading = false.obs;
   final isCheckingIn = false.obs;
 
+  final isLocationVerified = false.obs;
+  final isSelfieVerified = false.obs;
+
   Future<void> checkLocation() async {
     try {
       isLoading.value = true;
@@ -79,6 +82,8 @@ class AttendanceController extends GetxController {
         'Location Verified',
         'You are within the ${site.name} attendance area.',
       );
+
+      isLocationVerified.value = true;
     } catch (e) {
       print('LOCATION ERROR: $e');
 
@@ -161,6 +166,8 @@ class AttendanceController extends GetxController {
         'Selfie Verified',
         'Exactly one face was detected.',
       );
+
+      isSelfieVerified.value = true;
 
       return true;
     } catch (e) {

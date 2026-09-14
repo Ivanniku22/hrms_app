@@ -19,6 +19,58 @@ class AttendanceView extends GetView<AttendanceController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Obx(
+                  () => Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Attendance Verification',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Icon(
+                            controller.isLocationVerified.value
+                                ? Icons.check_circle
+                                : Icons.radio_button_unchecked,
+                            color: controller.isLocationVerified.value
+                                ? Colors.green
+                                : Colors.grey,
+                          ),
+                          const SizedBox(width: 8),
+                          const Text('Location verified'),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(
+                            controller.isSelfieVerified.value
+                                ? Icons.check_circle
+                                : Icons.radio_button_unchecked,
+                            color: controller.isSelfieVerified.value
+                                ? Colors.green
+                                : Colors.grey,
+                          ),
+                          const SizedBox(width: 8),
+                          const Text('Selfie verified'),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            Obx(
                   () => SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
@@ -49,6 +101,24 @@ class AttendanceView extends GetView<AttendanceController> {
                 },
                 icon: const Icon(Icons.camera_alt),
                 label: const Text('Take Selfie'),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            Obx(
+                  () => SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: controller.isLocationVerified.value &&
+                      controller.isSelfieVerified.value
+                      ? () {
+                    // Check-in will be implemented next.
+                  }
+                      : null,
+                  icon: const Icon(Icons.login),
+                  label: const Text('Check In'),
+                ),
               ),
             ),
           ],

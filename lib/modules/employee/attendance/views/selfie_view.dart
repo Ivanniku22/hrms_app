@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:io';
+
 import '../controller/attendance_controller.dart';
 
 class SelfieView extends StatefulWidget {
@@ -19,25 +21,29 @@ class _SelfieViewState extends State<SelfieView> {
   @override
   void initState() {
     super.initState();
+
+    controller.clearCapturedSelfie();
     _initializeCamera();
   }
 
   Future<void> _initializeCamera() async {
     try {
       await controller.initializeCamera();
+
+      if (mounted) {
+        setState(() {
+          isInitializing = false;
+        });
+      }
     } catch (e) {
+      if (!mounted) return;
+
       Get.snackbar(
         'Camera Error',
         e.toString().replaceFirst('Exception: ', ''),
       );
-      Get.back();
-      return;
-    }
 
-    if (mounted) {
-      setState(() {
-        isInitializing = false;
-      });
+      Get.back();
     }
   }
 
@@ -49,16 +55,6 @@ class _SelfieViewState extends State<SelfieView> {
 
   @override
   Widget build(BuildContext context) {
-    final cameraController = controller.cameraController.value;
-
-    if (isInitializing || cameraController == null) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Take Selfie'),
@@ -81,25 +77,44 @@ class _SelfieViewState extends State<SelfieView> {
                     ? CameraPreview(cameraController)
                     : Image.file(
                   File(selfie.path),
+                  width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: SizedBox(
+                child: selfie == null
+                    ? SizedBox(
                   width: double.infinity,
-                  child: selfie == null
-                      ? ElevatedButton.icon(
+                  child: ElevatedButton.icon(
                     onPressed: controller.captureSelfie,
                     icon: const Icon(Icons.camera_alt),
                     label: const Text('Take Selfie'),
-                  )
-                      : ElevatedButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    child: const Text('Continue'),
                   ),
+                )
+                    : Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: controller.retakeSelfie,
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Retake'),
+                      ),
+                    ),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          final isValid = await controller.validateSelfie();
+
+                          if (!isValid || !mounted) return;
+
+                          Get.offNamed('/employee/attendance');
+                        },
+                        child: const Text('Continue'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

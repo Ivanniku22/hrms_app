@@ -1,4 +1,6 @@
 import 'package:camera/camera.dart';
+import 'dart:io';
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
 class CameraService {
   CameraController? _controller;
@@ -24,6 +26,22 @@ class CameraService {
     );
 
     await _controller!.initialize();
+  }
+
+  Future<int> detectFaces(String imagePath) async {
+    final inputImage = InputImage.fromFile(File(imagePath));
+
+    final faceDetector = FaceDetector(
+      options: FaceDetectorOptions(
+        performanceMode: FaceDetectorMode.accurate,
+      ),
+    );
+
+    final faces = await faceDetector.processImage(inputImage);
+
+    await faceDetector.close();
+
+    return faces.length;
   }
 
   Future<void> dispose() async {

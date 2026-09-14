@@ -123,6 +123,67 @@ class AttendanceController extends GetxController {
     }
   }
 
+  Future<bool> validateSelfie() async {
+    final selfie = capturedSelfie.value;
+
+    if (selfie == null) {
+      Get.snackbar(
+        'Selfie Required',
+        'Please take a selfie first.',
+      );
+      return false;
+    }
+
+    try {
+      isLoading.value = true;
+
+      final faceCount = await _cameraService.detectFaces(
+        selfie.path,
+      );
+
+      if (faceCount == 0) {
+        Get.snackbar(
+          'No Face Detected',
+          'Please take a selfie with your face clearly visible.',
+        );
+        return false;
+      }
+
+      if (faceCount > 1) {
+        Get.snackbar(
+          'Multiple Faces',
+          'Only one person should be visible in the selfie.',
+        );
+        return false;
+      }
+
+      Get.snackbar(
+        'Selfie Verified',
+        'Exactly one face was detected.',
+      );
+
+      return true;
+    } catch (e) {
+      Get.snackbar(
+        'Face Detection Error',
+        'Unable to verify the selfie.',
+      );
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+
+  void retakeSelfie() {
+    capturedSelfie.value = null;
+  }
+
+
+  void clearCapturedSelfie() {
+    capturedSelfie.value = null;
+  }
+
   Future<void> disposeCamera() async {
     await _cameraService.dispose();
     cameraController.value = null;

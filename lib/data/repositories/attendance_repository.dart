@@ -4,9 +4,7 @@ import '../models/attendance_model.dart';
 class AttendanceRepository {
   final DatabaseService _databaseService;
 
-  AttendanceRepository({
-    required DatabaseService databaseService,
-  }) : _databaseService = databaseService;
+  AttendanceRepository(this._databaseService);
 
   Future<void> saveAttendance(AttendanceModel attendance) async {
     await _databaseService.insertAttendance(
@@ -17,21 +15,18 @@ class AttendanceRepository {
   Future<List<AttendanceModel>> getAttendanceByUser(
       String userId,
       ) async {
-    final records = await _databaseService.getAttendanceByUser(
-      userId,
-    );
+    final data = await _databaseService.getAttendanceByUser(userId);
 
-    return records
-        .map(AttendanceModel.fromMap)
+    return data
+        .map((item) => AttendanceModel.fromMap(item))
         .toList();
   }
 
   Future<List<AttendanceModel>> getUnsyncedAttendance() async {
-    final records =
-    await _databaseService.getUnsyncedAttendance();
+    final data = await _databaseService.getUnsyncedAttendance();
 
-    return records
-        .map(AttendanceModel.fromMap)
+    return data
+        .map((item) => AttendanceModel.fromMap(item))
         .toList();
   }
 

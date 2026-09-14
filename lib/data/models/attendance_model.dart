@@ -1,34 +1,46 @@
 class AttendanceModel {
   final String id;
   final String userId;
-  final String siteId;
-  final DateTime checkInTime;
-  final double latitude;
-  final double longitude;
-  final bool locationVerified;
-  final bool selfieVerified;
+  final String date;
+  final String? checkInTime;
+  final String? checkOutTime;
+  final String status;
+  final String? siteId;
+  final String? siteName;
+  final double? latitude;
+  final double? longitude;
+  final String? selfiePath;
+  final bool synced;
 
   AttendanceModel({
     required this.id,
     required this.userId,
-    required this.siteId,
-    required this.checkInTime,
-    required this.latitude,
-    required this.longitude,
-    required this.locationVerified,
-    required this.selfieVerified,
+    required this.date,
+    this.checkInTime,
+    this.checkOutTime,
+    required this.status,
+    this.siteId,
+    this.siteName,
+    this.latitude,
+    this.longitude,
+    this.selfiePath,
+    this.synced = false,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'userId': userId,
+      'date': date,
+      'checkInTime': checkInTime,
+      'checkOutTime': checkOutTime,
+      'status': status,
       'siteId': siteId,
-      'checkInTime': checkInTime.toIso8601String(),
+      'siteName': siteName,
       'latitude': latitude,
       'longitude': longitude,
-      'locationVerified': locationVerified,
-      'selfieVerified': selfieVerified,
+      'selfiePath': selfiePath,
+      'synced': synced ? 1 : 0,
     };
   }
 
@@ -36,12 +48,16 @@ class AttendanceModel {
     return AttendanceModel(
       id: map['id'] as String,
       userId: map['userId'] as String,
-      siteId: map['siteId'] as String,
-      checkInTime: DateTime.parse(map['checkInTime'] as String),
-      latitude: (map['latitude'] as num).toDouble(),
-      longitude: (map['longitude'] as num).toDouble(),
-      locationVerified: map['locationVerified'] as bool,
-      selfieVerified: map['selfieVerified'] as bool,
+      date: map['date'] as String,
+      checkInTime: map['checkInTime'] as String?,
+      checkOutTime: map['checkOutTime'] as String?,
+      status: map['status'] as String,
+      siteId: map['siteId'] as String?,
+      siteName: map['siteName'] as String?,
+      latitude: (map['latitude'] as num?)?.toDouble(),
+      longitude: (map['longitude'] as num?)?.toDouble(),
+      selfiePath: map['selfiePath'] as String?,
+      synced: (map['synced'] as int? ?? 0) == 1,
     );
   }
 }

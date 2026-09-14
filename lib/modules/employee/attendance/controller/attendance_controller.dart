@@ -1,7 +1,9 @@
 import 'package:camera/camera.dart';
 import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
 import '../../../../core/services/camera_service.dart';
 import '../../../../core/services/location_service.dart';
+import '../../../../data/models/attendance_model.dart';
 import '../../../../data/repositories/attendance_repository.dart';
 import '../../../../data/repositories/site_repository.dart';
 import '../../../auth/controller/auth_controller.dart';
@@ -33,6 +35,11 @@ class AttendanceController extends GetxController {
 
   final isLocationVerified = false.obs;
   final isSelfieVerified = false.obs;
+
+  final verifiedLatitude = RxnDouble();
+  final verifiedLongitude = RxnDouble();
+  final verifiedSiteId = RxnString();
+  final verifiedSiteName = RxnString();
 
   Future<void> checkLocation() async {
     try {
@@ -82,6 +89,11 @@ class AttendanceController extends GetxController {
         'Location Verified',
         'You are within the ${site.name} attendance area.',
       );
+
+      verifiedLatitude.value = position.latitude;
+      verifiedLongitude.value = position.longitude;
+      verifiedSiteId.value = site.id;
+      verifiedSiteName.value = site.name;
 
       isLocationVerified.value = true;
     } catch (e) {
@@ -194,5 +206,70 @@ class AttendanceController extends GetxController {
   Future<void> disposeCamera() async {
     await _cameraService.dispose();
     cameraController.value = null;
+  }
+
+  Future<void> checkIn() async {
+    if (!isLocationVerified.value || !isSelfieVerified.value) {
+      Get.snackbar(
+        'Verification Required',
+        'Please complete location and selfie verification first.',
+      );
+      return;
+    }
+
+    final user = _authController.currentUser;
+
+    if (user == null) {
+      Get.snackbar(
+        'Error',
+        'User session not found.',
+      );
+      return;
+    }
+
+    final selfie = capturedSelfie.value;
+
+    if (selfie == null) {
+      Get.snackbar(
+        'Selfie Required',
+        'Please capture and verify your selfie first.',
+      );
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+
+      final now = DateTime.now();
+
+      final attendance = AttendanceModel(
+        id: const Uuid().v4(),
+        userId: user.uid,
+        date: now.toIso8601String().split('T').first,
+        checkInTime: now.toIso8601String(),
+        checkOutTime: null,
+        status: 'present',
+        siteId: verifiedSiteId.value,
+        siteName: verifiedSiteName.value,
+        latitude: verifiedLatitude.value,
+        longitude: verifiedLongitude.value,
+        selfiePath: selfie.path,
+        synced: false,
+      );
+
+      await _attendanceRepository.saveAttendance(attendance);
+
+      Get.snackbar(
+        'Check In Successful',
+        'Your attendance has been saved.',
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Check In Failed',
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

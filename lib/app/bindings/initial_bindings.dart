@@ -46,11 +46,10 @@ class InitialBinding extends Bindings {
       permanent: true,
     );
 
-    Get.put<AttendanceRepository>(
-      AttendanceRepository(
-        databaseService: Get.find<DatabaseService>(),
+    Get.lazyPut<AttendanceRepository>(
+          () => AttendanceRepository(
+        Get.find<DatabaseService>(),
       ),
-      permanent: true,
     );
 
     Get.put<AuthController>(

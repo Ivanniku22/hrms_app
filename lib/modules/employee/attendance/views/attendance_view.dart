@@ -112,9 +112,7 @@ class AttendanceView extends GetView<AttendanceController> {
                 child: ElevatedButton.icon(
                   onPressed: controller.isLocationVerified.value &&
                       controller.isSelfieVerified.value
-                      ? () {
-                    // Check-in will be implemented next.
-                  }
+                      ? controller.checkIn
                       : null,
                   icon: const Icon(Icons.login),
                   label: const Text('Check In'),

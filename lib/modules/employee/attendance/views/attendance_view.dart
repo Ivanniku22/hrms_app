@@ -12,12 +12,22 @@ class AttendanceView extends GetView<AttendanceController> {
       appBar: AppBar(
         title: const Text('Attendance'),
       ),
-      body: const Center(
-        child: Text(
-          'Attendance',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+      body: Center(
+        child: Obx(
+              () => ElevatedButton.icon(
+            onPressed: controller.isLoading.value
+                ? null
+                : controller.checkLocation,
+            icon: const Icon(Icons.location_on),
+            label: controller.isLoading.value
+                ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            )
+                : const Text('Check Location'),
           ),
         ),
       ),

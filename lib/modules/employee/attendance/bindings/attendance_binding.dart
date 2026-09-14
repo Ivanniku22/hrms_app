@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../core/services/location_service.dart';
 import '../../../../data/repositories/attendance_repository.dart';
 import '../../../../data/repositories/site_repository.dart';
+import '../../../auth/controller/auth_controller.dart';
 import '../controller/attendance_controller.dart';
 
 class AttendanceBinding extends Bindings {
@@ -13,6 +14,7 @@ class AttendanceBinding extends Bindings {
         attendanceRepository: Get.find<AttendanceRepository>(),
         siteRepository: Get.find<SiteRepository>(),
         locationService: Get.find<LocationService>(),
+        authController: Get.find<AuthController>(),
       ),
     );
   }

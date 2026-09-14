@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+import '../../core/services/camera_service.dart';
 import '../../core/services/database_service.dart';
 import '../../core/services/firebase_service.dart';
 import '../../core/services/location_service.dart';
@@ -23,6 +24,11 @@ class InitialBinding extends Bindings {
 
     Get.put<LocationService>(
       LocationService(),
+      permanent: true,
+    );
+
+    Get.put<CameraService>(
+      CameraService(),
       permanent: true,
     );
 

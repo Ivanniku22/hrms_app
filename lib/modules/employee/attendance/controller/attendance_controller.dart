@@ -30,8 +30,17 @@ class AttendanceController extends GetxController {
         _cameraService = cameraService,
         _authController = authController;
 
+  @override
+  void onInit() {
+    super.onInit();
+    loadTodayAttendance();
+  }
+
   final isLoading = false.obs;
   final isCheckingIn = false.obs;
+
+  final hasCheckedInToday = false.obs;
+  final hasCheckedOutToday = false.obs;
 
   final isLocationVerified = false.obs;
   final isSelfieVerified = false.obs;
@@ -237,15 +246,31 @@ class AttendanceController extends GetxController {
       return;
     }
 
+    final today = DateTime.now().toIso8601String().split('T').first;
+
     try {
       isLoading.value = true;
+
+      final existingAttendance =
+      await _attendanceRepository.getAttendanceByDate(
+        user.uid,
+        today,
+      );
+
+      if (existingAttendance != null) {
+        Get.snackbar(
+          'Already Checked In',
+          'You have already checked in today.',
+        );
+        return;
+      }
 
       final now = DateTime.now();
 
       final attendance = AttendanceModel(
         id: const Uuid().v4(),
         userId: user.uid,
-        date: now.toIso8601String().split('T').first,
+        date: today,
         checkInTime: now.toIso8601String(),
         checkOutTime: null,
         status: 'present',
@@ -261,7 +286,7 @@ class AttendanceController extends GetxController {
 
       Get.snackbar(
         'Check In Successful',
-        'Your attendance has been saved.',
+        'Your attendance has been registered.',
       );
     } catch (e) {
       Get.snackbar(
@@ -271,5 +296,97 @@ class AttendanceController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> checkOut() async {
+    final user = _authController.currentUser;
+
+    if (user == null) {
+      Get.snackbar(
+        'Error',
+        'User session not found.',
+      );
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+
+      final today = DateTime.now().toIso8601String().split('T').first;
+
+      final attendance =
+      await _attendanceRepository.getAttendanceByDate(
+        user.uid,
+        today,
+      );
+
+      if (attendance == null) {
+        Get.snackbar(
+          'Check Out Failed',
+          'No check-in record found for today.',
+        );
+        return;
+      }
+
+      if (attendance.checkOutTime != null) {
+        Get.snackbar(
+          'Already Checked Out',
+          'You have already checked out today.',
+        );
+        return;
+      }
+
+      final checkOutTime = DateTime.now().toIso8601String();
+
+      await _attendanceRepository.updateCheckOutTime(
+        attendance.id,
+        checkOutTime,
+      );
+
+      Get.snackbar(
+        'Check Out Successful',
+        'Your attendance has been completed.',
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Check Out Failed',
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> loadTodayAttendance() async {
+    final user = _authController.currentUser;
+
+    if (user == null) {
+      return;
+    }
+
+    final today = DateTime.now().toIso8601String().split('T').first;
+
+    final attendance =
+    await _attendanceRepository.getAttendanceByDate(
+      user.uid,
+      today,
+    );
+
+    if (attendance == null) {
+      hasCheckedInToday.value = false;
+      hasCheckedOutToday.value = false;
+      return;
+    }
+
+    hasCheckedInToday.value = true;
+    hasCheckedOutToday.value = attendance.checkOutTime != null;
+
+    isLocationVerified.value = true;
+    isSelfieVerified.value = true;
+
+    verifiedLatitude.value = attendance.latitude;
+    verifiedLongitude.value = attendance.longitude;
+    verifiedSiteId.value = attendance.siteId;
+    verifiedSiteName.value = attendance.siteName;
   }
 }

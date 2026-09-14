@@ -10,16 +10,14 @@ class AttendanceView extends GetView<AttendanceController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Attendance'),
-      ),
+      appBar: AppBar(title: const Text('Attendance')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Obx(
-                  () => Card(
+              () => Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -33,6 +31,7 @@ class AttendanceView extends GetView<AttendanceController> {
                         ),
                       ),
                       const SizedBox(height: 12),
+
                       Row(
                         children: [
                           Icon(
@@ -47,7 +46,9 @@ class AttendanceView extends GetView<AttendanceController> {
                           const Text('Location verified'),
                         ],
                       ),
+
                       const SizedBox(height: 8),
+
                       Row(
                         children: [
                           Icon(
@@ -70,22 +71,23 @@ class AttendanceView extends GetView<AttendanceController> {
 
             const SizedBox(height: 24),
 
+            // Check Location
             Obx(
-                  () => SizedBox(
+              () => SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: controller.isLoading.value
+                  onPressed:
+                      controller.hasCheckedInToday.value ||
+                          controller.isLoading.value
                       ? null
                       : controller.checkLocation,
                   icon: const Icon(Icons.location_on),
                   label: controller.isLoading.value
                       ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                    ),
-                  )
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Check Location'),
                 ),
               ),
@@ -93,29 +95,63 @@ class AttendanceView extends GetView<AttendanceController> {
 
             const SizedBox(height: 16),
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Get.toNamed(AppRoutes.selfie);
-                },
-                icon: const Icon(Icons.camera_alt),
-                label: const Text('Take Selfie'),
+            // Take Selfie
+            Obx(
+              () => SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: controller.hasCheckedInToday.value
+                      ? null
+                      : () {
+                          Get.toNamed(AppRoutes.selfie);
+                        },
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text('Take Selfie'),
+                ),
               ),
             ),
 
             const SizedBox(height: 16),
 
+            // Check In
             Obx(
-                  () => SizedBox(
+              () => SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: controller.isLocationVerified.value &&
-                      controller.isSelfieVerified.value
+                  onPressed:
+                      !controller.hasCheckedInToday.value &&
+                          controller.isLocationVerified.value &&
+                          controller.isSelfieVerified.value
                       ? controller.checkIn
                       : null,
                   icon: const Icon(Icons.login),
-                  label: const Text('Check In'),
+                  label: Text(
+                    controller.hasCheckedInToday.value
+                        ? 'Checked In'
+                        : 'Check In',
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Check Out
+            Obx(
+              () => SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed:
+                      controller.hasCheckedInToday.value &&
+                          !controller.hasCheckedOutToday.value
+                      ? controller.checkOut
+                      : null,
+                  icon: const Icon(Icons.logout),
+                  label: Text(
+                    controller.hasCheckedOutToday.value
+                        ? 'Checked Out'
+                        : 'Check Out',
+                  ),
                 ),
               ),
             ),

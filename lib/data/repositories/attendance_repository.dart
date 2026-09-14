@@ -22,6 +22,32 @@ class AttendanceRepository {
         .toList();
   }
 
+  Future<AttendanceModel?> getAttendanceByDate(
+      String userId,
+      String date,
+      ) async {
+    final data = await _databaseService.getAttendanceByDate(
+      userId,
+      date,
+    );
+
+    if (data == null) {
+      return null;
+    }
+
+    return AttendanceModel.fromMap(data);
+  }
+
+  Future<void> updateCheckOutTime(
+      String id,
+      String checkOutTime,
+      ) async {
+    await _databaseService.updateCheckOutTime(
+      id,
+      checkOutTime,
+    );
+  }
+
   Future<List<AttendanceModel>> getUnsyncedAttendance() async {
     final data = await _databaseService.getUnsyncedAttendance();
 

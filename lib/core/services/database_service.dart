@@ -75,6 +75,42 @@ class DatabaseService {
     );
   }
 
+  Future<Map<String, dynamic>?> getAttendanceByDate(
+      String userId,
+      String date,
+      ) async {
+    final db = await database;
+
+    final result = await db.query(
+      attendanceTable,
+      where: 'userId = ? AND date = ?',
+      whereArgs: [userId, date],
+      limit: 1,
+    );
+
+    if (result.isEmpty) {
+      return null;
+    }
+
+    return result.first;
+  }
+
+  Future<int> updateCheckOutTime(
+      String id,
+      String checkOutTime,
+      ) async {
+    final db = await database;
+
+    return db.update(
+      attendanceTable,
+      {
+        'checkOutTime': checkOutTime,
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   Future<List<Map<String, dynamic>>> getUnsyncedAttendance() async {
     final db = await database;
 

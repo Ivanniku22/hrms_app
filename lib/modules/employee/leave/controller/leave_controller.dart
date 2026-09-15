@@ -17,7 +17,7 @@ class LeaveController extends GetxController {
 
 
   final isLoading = false.obs;
-
+  final isLoadingLeaves = false.obs;
   final leaveType = ''.obs;
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();

@@ -21,13 +21,13 @@ class ApproverDashboardView extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(
-        child: Text(
-          'Welcome, Approver!',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+      body: Center(
+        child: ElevatedButton.icon(
+          onPressed: () {
+            Get.toNamed('/approver/leave-approval');
+          },
+          icon: const Icon(Icons.approval),
+          label: const Text('Leave Approvals'),
         ),
       ),
     );

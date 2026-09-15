@@ -11,6 +11,7 @@ class LeaveApprovalController extends GetxController {
   LeaveApprovalController(this._leaveRepository);
 
   final pendingLeaves = <LeaveModel>[].obs;
+  final isLoading = true.obs;
 
   StreamSubscription<List<LeaveModel>>? _leaveSubscription;
 
@@ -22,7 +23,32 @@ class LeaveApprovalController extends GetxController {
         .getPendingLeaves()
         .listen((leaves) {
       pendingLeaves.assignAll(leaves);
+      isLoading.value = false;
     });
+  }
+
+  Future<void> updateLeaveStatus(
+      String leaveId,
+      String status,
+      ) async {
+    try {
+      await _leaveRepository.updateLeaveStatus(
+        leaveId,
+        status,
+      );
+
+      Get.snackbar(
+        'Success',
+        status == 'approved'
+            ? 'Leave approved.'
+            : 'Leave rejected.',
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Unable to update leave request.',
+      );
+    }
   }
 
   @override

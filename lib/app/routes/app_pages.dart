@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 
 import '../../modules/approver/dashboard/views/approver_dashboard_view.dart';
+import '../../modules/approver/leave_approval/bindings/leave_approval_binding.dart';
+import '../../modules/approver/leave_approval/views/leave_approval_view.dart';
 import '../../modules/auth/bindings/auth_binding.dart';
 import '../../modules/auth/views/auth_gate_view.dart';
 import '../../modules/auth/views/login_view.dart';
@@ -67,6 +69,12 @@ class AppPages {
     GetPage(
       name: AppRoutes.approver,
       page: () => const ApproverDashboardView(),
+    ),
+
+    GetPage(
+      name: AppRoutes.leaveApproval,
+      page: () => const LeaveApprovalView(),
+      binding: LeaveApprovalBinding(),
     ),
   ];
 }

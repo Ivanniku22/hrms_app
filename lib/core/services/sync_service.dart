@@ -80,4 +80,9 @@ class SyncService {
       );
     }
   }
+
+
+  void dispose() {
+    _connectivitySubscription?.cancel();
+  }
 }

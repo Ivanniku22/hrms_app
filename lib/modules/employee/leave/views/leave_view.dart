@@ -72,7 +72,7 @@ class LeaveView extends GetView<LeaveController> {
               const SizedBox(height: 16),
 
               DropdownButtonFormField<String>(
-                value: controller.leaveType.value.isEmpty
+                initialValue: controller.leaveType.value.isEmpty
                     ? null
                     : controller.leaveType.value,
                 decoration: const InputDecoration(

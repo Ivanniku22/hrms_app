@@ -107,7 +107,7 @@ flutter doctor
 ### 1. Clone the repository
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+git clone https://github.com/Ivanniku22/hrms_app.git
 ```
 
 Navigate to the project directory:

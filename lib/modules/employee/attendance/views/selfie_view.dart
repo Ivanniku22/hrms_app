@@ -17,6 +17,7 @@ class _SelfieViewState extends State<SelfieView> {
   final controller = Get.find<AttendanceController>();
 
   bool isInitializing = true;
+  String? cameraError;
 
   @override
   void initState() {
@@ -30,20 +31,18 @@ class _SelfieViewState extends State<SelfieView> {
     try {
       await controller.initializeCamera();
 
-      if (mounted) {
-        setState(() {
-          isInitializing = false;
-        });
-      }
+      if (!mounted) return;
+
+      setState(() {
+        isInitializing = false;
+      });
     } catch (e) {
       if (!mounted) return;
 
-      Get.snackbar(
-        'Camera Error',
-        e.toString().replaceFirst('Exception: ', ''),
-      );
-
-      Get.back();
+      setState(() {
+        isInitializing = false;
+        cameraError = e.toString().replaceFirst('Exception: ', '');
+      });
     }
   }
 
@@ -64,9 +63,42 @@ class _SelfieViewState extends State<SelfieView> {
           final cameraController = controller.cameraController.value;
           final selfie = controller.capturedSelfie.value;
 
-          if (isInitializing || cameraController == null) {
+          if (isInitializing) {
             return const Center(
               child: CircularProgressIndicator(),
+            );
+          }
+
+          if (cameraError != null) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.camera_alt_outlined,
+                      size: 64,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      cameraError!,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () => Get.back(),
+                      child: const Text('Go Back'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          if (cameraController == null) {
+            return const Center(
+              child: Text('Camera is not available.'),
             );
           }
 
@@ -81,7 +113,6 @@ class _SelfieViewState extends State<SelfieView> {
                   fit: BoxFit.cover,
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: selfie == null
@@ -102,10 +133,12 @@ class _SelfieViewState extends State<SelfieView> {
                         label: const Text('Retake'),
                       ),
                     ),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () async {
-                          final isValid = await controller.validateSelfie();
+                          final isValid =
+                          await controller.validateSelfie();
 
                           if (!isValid || !mounted) return;
 

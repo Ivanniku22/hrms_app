@@ -92,9 +92,6 @@ class AuthRepository {
       return null;
     }
 
-    print('SESSION CHECK: Firebase user found');
-
-    print('SESSION CHECK: Fetching Firestore profile...');
 
     try {
       final userDoc = await _firebaseService.firestore

@@ -48,14 +48,11 @@ class SyncService {
   Future<void> syncAttendance() async {
     final records = await _databaseService.getUnsyncedAttendance();
 
-    print('SYNC: Unsynced records = ${records.length}');
-
     if (records.isEmpty) {
       return;
     }
 
     for (final record in records) {
-      print('SYNC: Uploading attendance ${record['id']}');
 
       final userId = record['userId'] as String;
       final attendanceId = record['id'] as String;
@@ -73,7 +70,6 @@ class SyncService {
           .doc(attendanceId)
           .set(firestoreData);
 
-      print('SYNC: Firestore upload successful for $attendanceId');
 
       await _databaseService.markAttendanceAsSynced(
         attendanceId,

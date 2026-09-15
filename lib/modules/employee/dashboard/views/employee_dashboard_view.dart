@@ -43,6 +43,16 @@ class EmployeeDashboardView extends StatelessWidget {
               icon: const Icon(Icons.person),
               label: const Text('Profile'),
             ),
+
+            const SizedBox(height: 12,),
+
+            ElevatedButton.icon(
+              onPressed: () {
+                Get.toNamed(AppRoutes.leave);
+              },
+              icon: const Icon(Icons.event_available),
+              label: const Text('Leave'),
+            ),
           ],
         ),
       ),

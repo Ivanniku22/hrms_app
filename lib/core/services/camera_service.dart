@@ -1,5 +1,6 @@
 import 'dart:io';
-
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
@@ -60,6 +61,22 @@ class CameraService {
     await faceDetector.close();
 
     return faces.length;
+  }
+
+  Future<String> saveSelfiePermanently(String imagePath) async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    final fileName =
+        'selfie_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+    final permanentPath = path.join(
+      directory.path,
+      fileName,
+    );
+
+    await File(imagePath).copy(permanentPath);
+
+    return permanentPath;
   }
 
   Future<void> dispose() async {

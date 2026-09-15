@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'app/bindings/initial_bindings.dart';
 import 'app/routes/app_pages.dart';
-import 'app/routes/app_routes.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {

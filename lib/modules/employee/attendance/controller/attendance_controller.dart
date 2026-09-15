@@ -1,14 +1,14 @@
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../../../core/services/camera_service.dart';
 import '../../../../core/services/location_service.dart';
 import '../../../../data/models/attendance_model.dart';
 import '../../../../data/repositories/attendance_repository.dart';
 import '../../../../data/repositories/site_repository.dart';
 import '../../../auth/controller/auth_controller.dart';
-import 'package:flutter/foundation.dart';
-
 
 class AttendanceController extends GetxController {
   final AttendanceRepository _attendanceRepository;
@@ -30,10 +30,10 @@ class AttendanceController extends GetxController {
     required CameraService cameraService,
     required AuthController authController,
   }) : _attendanceRepository = attendanceRepository,
-        _siteRepository = siteRepository,
-        _locationService = locationService,
-        _cameraService = cameraService,
-        _authController = authController;
+       _siteRepository = siteRepository,
+       _locationService = locationService,
+       _cameraService = cameraService,
+       _authController = authController;
 
   @override
   void onInit() {
@@ -63,20 +63,14 @@ class AttendanceController extends GetxController {
       final user = _authController.currentUser;
 
       if (user == null) {
-        Get.snackbar(
-          'Error',
-          'User session not found.',
-        );
+        Get.snackbar('Error', 'User session not found.');
         return;
       }
 
       final siteId = user.siteId;
 
       if (siteId == null || siteId.isEmpty) {
-        Get.snackbar(
-          'Error',
-          'No site is assigned to this employee.',
-        );
+        Get.snackbar('Error', 'No site is assigned to this employee.');
         return;
       }
 
@@ -112,7 +106,7 @@ class AttendanceController extends GetxController {
 
       isLocationVerified.value = true;
     } catch (e) {
-      print('LOCATION ERROR: $e');
+      debugPrint('LOCATION ERROR: $e');
 
       Get.snackbar(
         'Location Error',
@@ -130,28 +124,22 @@ class AttendanceController extends GetxController {
   }
 
   Future<void> captureSelfie() async {
-    final controller = cameraController.value;
-
-    if (controller == null || !controller.value.isInitialized) {
-      Get.snackbar(
-        'Camera Error',
-        'Camera is not ready.',
-      );
-      return;
-    }
-
     try {
-      capturedSelfie.value = await controller.takePicture();
+      final controller = cameraController.value;
 
-      Get.snackbar(
-        'Selfie Captured',
-        'Selfie captured successfully.',
+      if (controller == null || !controller.value.isInitialized) {
+        return;
+      }
+
+      final image = await controller.takePicture();
+
+      final permanentPath = await _cameraService.saveSelfiePermanently(
+        image.path,
       );
+
+      capturedSelfie.value = XFile(permanentPath);
     } catch (e) {
-      Get.snackbar(
-        'Camera Error',
-        'Unable to capture selfie.',
-      );
+      Get.snackbar('Camera Error', 'Unable to capture selfie.');
     }
   }
 
@@ -159,19 +147,14 @@ class AttendanceController extends GetxController {
     final selfie = capturedSelfie.value;
 
     if (selfie == null) {
-      Get.snackbar(
-        'Selfie Required',
-        'Please take a selfie first.',
-      );
+      Get.snackbar('Selfie Required', 'Please take a selfie first.');
       return false;
     }
 
     try {
       isLoading.value = true;
 
-      final faceCount = await _cameraService.detectFaces(
-        selfie.path,
-      );
+      final faceCount = await _cameraService.detectFaces(selfie.path);
 
       if (faceCount == 0) {
         Get.snackbar(
@@ -189,30 +172,22 @@ class AttendanceController extends GetxController {
         return false;
       }
 
-      Get.snackbar(
-        'Selfie Verified',
-        'Exactly one face was detected.',
-      );
+      Get.snackbar('Selfie Verified', 'Exactly one face was detected.');
 
       isSelfieVerified.value = true;
 
       return true;
     } catch (e) {
-      Get.snackbar(
-        'Face Detection Error',
-        'Unable to verify the selfie.',
-      );
+      Get.snackbar('Face Detection Error', 'Unable to verify the selfie.');
       return false;
     } finally {
       isLoading.value = false;
     }
   }
 
-
   void retakeSelfie() {
     capturedSelfie.value = null;
   }
-
 
   void clearCapturedSelfie() {
     capturedSelfie.value = null;
@@ -235,10 +210,7 @@ class AttendanceController extends GetxController {
     final user = _authController.currentUser;
 
     if (user == null) {
-      Get.snackbar(
-        'Error',
-        'User session not found.',
-      );
+      Get.snackbar('Error', 'User session not found.');
       return;
     }
 
@@ -257,11 +229,8 @@ class AttendanceController extends GetxController {
     try {
       isLoading.value = true;
 
-      final existingAttendance =
-      await _attendanceRepository.getAttendanceByDate(
-        user.uid,
-        today,
-      );
+      final existingAttendance = await _attendanceRepository
+          .getAttendanceByDate(user.uid, today);
 
       if (existingAttendance != null) {
         Get.snackbar(
@@ -308,10 +277,7 @@ class AttendanceController extends GetxController {
     final user = _authController.currentUser;
 
     if (user == null) {
-      Get.snackbar(
-        'Error',
-        'User session not found.',
-      );
+      Get.snackbar('Error', 'User session not found.');
       return;
     }
 
@@ -320,17 +286,13 @@ class AttendanceController extends GetxController {
 
       final today = DateTime.now().toIso8601String().split('T').first;
 
-      final attendance =
-      await _attendanceRepository.getAttendanceByDate(
+      final attendance = await _attendanceRepository.getAttendanceByDate(
         user.uid,
         today,
       );
 
       if (attendance == null) {
-        Get.snackbar(
-          'Check Out Failed',
-          'No check-in record found for today.',
-        );
+        Get.snackbar('Check Out Failed', 'No check-in record found for today.');
         return;
       }
 
@@ -372,8 +334,7 @@ class AttendanceController extends GetxController {
 
     final today = DateTime.now().toIso8601String().split('T').first;
 
-    final attendance =
-    await _attendanceRepository.getAttendanceByDate(
+    final attendance = await _attendanceRepository.getAttendanceByDate(
       user.uid,
       today,
     );
@@ -406,15 +367,11 @@ class AttendanceController extends GetxController {
     try {
       isLoading.value = true;
 
-      final records =
-      await _attendanceRepository.getAttendanceByUser(user.uid);
+      final records = await _attendanceRepository.getAttendanceByUser(user.uid);
 
       attendanceHistory.assignAll(records);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Unable to load attendance history.',
-      );
+      Get.snackbar('Error', 'Unable to load attendance history.');
     } finally {
       isLoading.value = false;
     }

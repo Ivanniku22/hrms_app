@@ -38,6 +38,12 @@ class InitialBinding extends Bindings {
       permanent: true,
     );
 
+    Get.put<AttendanceRepository>(
+      AttendanceRepository(
+        Get.find<DatabaseService>(),
+      ),
+    );
+
     Get.put<ConnectivityService>(
       ConnectivityService(),
     );
@@ -75,12 +81,6 @@ class InitialBinding extends Bindings {
         firebaseService: Get.find<FirebaseService>(),
       ),
       permanent: true,
-    );
-
-    Get.lazyPut<AttendanceRepository>(
-          () => AttendanceRepository(
-        Get.find<DatabaseService>(),
-      ),
     );
 
     Get.put<AuthController>(

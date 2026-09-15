@@ -105,6 +105,7 @@ class DatabaseService {
       attendanceTable,
       {
         'checkOutTime': checkOutTime,
+        'synced' : 0,
       },
       where: 'id = ?',
       whereArgs: [id],

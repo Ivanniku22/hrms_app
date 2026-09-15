@@ -23,12 +23,27 @@ class EmployeeDashboardView extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: ElevatedButton.icon(
-            onPressed: () {
-              Get.toNamed(AppRoutes.attendance);
-            },
-          icon: const Icon(Icons.fingerprint),
-          label: const Text('Attendance'),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton.icon(
+                onPressed: () {
+                  Get.toNamed(AppRoutes.attendance);
+                },
+              icon: const Icon(Icons.fingerprint),
+              label: const Text('Attendance'),
+            ),
+
+            const SizedBox(height: 12,),
+
+            ElevatedButton.icon(
+              onPressed: () {
+                Get.toNamed(AppRoutes.profile);
+              },
+              icon: const Icon(Icons.person),
+              label: const Text('Profile'),
+            ),
+          ],
         ),
       ),
     );

@@ -9,6 +9,8 @@ import '../../modules/employee/attendance/views/attendance_history_view.dart';
 import '../../modules/employee/attendance/views/attendance_view.dart';
 import '../../modules/employee/attendance/views/selfie_view.dart';
 import '../../modules/employee/dashboard/views/employee_dashboard_view.dart';
+import '../../modules/employee/profile/bindings/profile_binding.dart';
+import '../../modules/employee/profile/views/profile_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -46,6 +48,12 @@ class AppPages {
       name: AppRoutes.attendanceHistory,
       page: () => const AttendanceHistoryView(),
       binding: AttendanceBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.profile,
+      page: () => const ProfileView(),
+      binding: ProfileBinding(),
     ),
 
     GetPage(

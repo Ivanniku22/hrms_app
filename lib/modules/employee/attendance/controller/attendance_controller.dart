@@ -7,6 +7,8 @@ import '../../../../data/models/attendance_model.dart';
 import '../../../../data/repositories/attendance_repository.dart';
 import '../../../../data/repositories/site_repository.dart';
 import '../../../auth/controller/auth_controller.dart';
+import 'package:flutter/foundation.dart';
+
 
 class AttendanceController extends GetxController {
   final AttendanceRepository _attendanceRepository;
@@ -17,6 +19,9 @@ class AttendanceController extends GetxController {
 
   final cameraController = Rxn<CameraController>();
   final capturedSelfie = Rxn<XFile>();
+  final attendanceHistory = <AttendanceModel>[].obs;
+  final selectedMonth = DateTime.now().month.obs;
+  final selectedYear = DateTime.now().year.obs;
 
   AttendanceController({
     required AttendanceRepository attendanceRepository,
@@ -34,6 +39,7 @@ class AttendanceController extends GetxController {
   void onInit() {
     super.onInit();
     loadTodayAttendance();
+    loadAttendanceHistory();
   }
 
   final isLoading = false.obs;
@@ -388,5 +394,42 @@ class AttendanceController extends GetxController {
     verifiedLongitude.value = attendance.longitude;
     verifiedSiteId.value = attendance.siteId;
     verifiedSiteName.value = attendance.siteName;
+  }
+
+  Future<void> loadAttendanceHistory() async {
+    final user = _authController.currentUser;
+
+    if (user == null) {
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+
+      final records =
+      await _attendanceRepository.getAttendanceByUser(user.uid);
+
+      attendanceHistory.assignAll(records);
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Unable to load attendance history.',
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  List<AttendanceModel> get filteredAttendanceHistory {
+    return attendanceHistory.where((attendance) {
+      final date = DateTime.tryParse(attendance.date);
+
+      if (date == null) {
+        return false;
+      }
+
+      return date.month == selectedMonth.value &&
+          date.year == selectedYear.value;
+    }).toList();
   }
 }

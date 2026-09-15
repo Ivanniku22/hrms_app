@@ -5,6 +5,7 @@ import '../../modules/auth/bindings/auth_binding.dart';
 import '../../modules/auth/views/auth_gate_view.dart';
 import '../../modules/auth/views/login_view.dart';
 import '../../modules/employee/attendance/bindings/attendance_binding.dart';
+import '../../modules/employee/attendance/views/attendance_history_view.dart';
 import '../../modules/employee/attendance/views/attendance_view.dart';
 import '../../modules/employee/attendance/views/selfie_view.dart';
 import '../../modules/employee/dashboard/views/employee_dashboard_view.dart';
@@ -41,6 +42,11 @@ class AppPages {
       page: () => const SelfieView(),
     ),
 
+    GetPage(
+      name: AppRoutes.attendanceHistory,
+      page: () => const AttendanceHistoryView(),
+      binding: AttendanceBinding(),
+    ),
 
     GetPage(
       name: AppRoutes.approver,

@@ -155,6 +155,19 @@ class AttendanceView extends GetView<AttendanceController> {
                 ),
               ),
             ),
+
+            const SizedBox(height: 16),
+
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Get.toNamed(AppRoutes.attendanceHistory);
+                },
+                icon: const Icon(Icons.history),
+                label: const Text('Attendance History'),
+              ),
+            ),
           ],
         ),
       ),
